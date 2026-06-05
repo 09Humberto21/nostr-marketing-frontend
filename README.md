@@ -52,9 +52,44 @@ npm run typecheck  # tsc --noEmit
 
 ### Environment
 
-| Variable                   | Description                                  | Default                 |
-| -------------------------- | -------------------------------------------- | ----------------------- |
-| `NEXT_PUBLIC_API_BASE_URL` | Base URL of the FastAPI backend (no trailing `/`) | `http://localhost:8000` |
+| Variable                   | Description                                                        | Default                 |
+| -------------------------- | ----------------------------------------------------------------- | ----------------------- |
+| `NEXT_PUBLIC_API_BASE_URL` | Where the browser sends API calls. Use `/api` for the proxy (recommended) or a full backend URL for direct calls. | `http://localhost:8000` |
+| `BACKEND_ORIGIN`           | Server-side only. Origin the Next.js proxy forwards `/api/*` to.   | `http://localhost:8000` |
+
+---
+
+## 🔗 Connecting to the backend
+
+The backend (FastAPI) runs on a different origin, so the app ships with a
+**same-origin proxy** to avoid CORS entirely: the browser calls `/api/*`, and
+the Next.js server (see `next.config.mjs` `rewrites`) forwards those requests to
+`BACKEND_ORIGIN` server-side — no preflight, no CORS config needed on the API.
+
+```bash
+# .env.local
+NEXT_PUBLIC_API_BASE_URL=/api
+BACKEND_ORIGIN=http://localhost:8006   # wherever your FastAPI backend listens
+```
+
+Quickest way to bring the backend up (Docker, from the backend repo):
+
+```bash
+docker compose -p nostr_marketing up -d postgres        # Postgres 16
+docker build -t nostr-api .                              # FastAPI image (py 3.13)
+docker run --rm --network nostr_marketing_default \
+  -e DATABASE_URL=postgresql+asyncpg://nostr:nostr_dev_password@postgres:5432/nostr_marketing \
+  nostr-api python -m alembic upgrade head               # migrations
+docker run -d --name nostr-api --network nostr_marketing_default -p 8006:8006 \
+  -e DATABASE_URL=postgresql+asyncpg://nostr:nostr_dev_password@postgres:5432/nostr_marketing \
+  -e JWT_SECRET_KEY=dev-secret-change-me nostr-api        # API on :8006
+```
+
+Then `npm run dev` and register a company at `/register`.
+
+> For production where the frontend and API share no origin, either keep this
+> proxy (deploy the Next.js server) or add CORS to the backend and point
+> `NEXT_PUBLIC_API_BASE_URL` straight at the API.
 
 ---
 

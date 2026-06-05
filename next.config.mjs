@@ -1,9 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // The backend lives on a separate origin. We expose its base URL via a
-  // public env var (consumed by the Axios instance). No rewrites needed for
-  // the MVP, but you can proxy /api here if you prefer same-origin requests.
+  async rewrites() {
+    // Same-origin proxy to the FastAPI backend. The browser talks to the Next
+    // server at `/api/*`, which forwards to the backend server-side — this
+    // sidesteps CORS entirely (no preflight), so the backend needs no CORS
+    // config. Set the axios base URL to `/api` (see NEXT_PUBLIC_API_BASE_URL).
+    const backendOrigin = (
+      process.env.BACKEND_ORIGIN ?? "http://localhost:8000"
+    ).replace(/\/$/, "");
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${backendOrigin}/:path*`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
