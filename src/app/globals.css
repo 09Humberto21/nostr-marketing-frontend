@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Satoshi Galaxy — semantic tokens (HSL channels) */
+    --background: 222 47% 6%; /* #0B0F19-ish */
+    --foreground: 210 40% 96%;
+
+    --muted: 222 30% 14%;
+    --muted-foreground: 215 18% 60%;
+
+    --primary: 158 80% 52%; /* aurora green */
+    --primary-foreground: 222 47% 6%;
+
+    --destructive: 0 72% 56%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 222 30% 18%;
+    --input: 222 30% 16%;
+    --ring: 158 80% 52%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-galaxy-900 text-foreground antialiased;
+    background-image: var(--tw-gradient, none);
+    font-feature-settings: "cv11", "ss01";
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Custom scrollbar — subtle, on-brand */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(222 30% 22%);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(158 60% 35%);
+    background-clip: padding-box;
+  }
+
+  /* Focus ring — keyboard accessible, on-brand */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring/70 ring-offset-2 ring-offset-galaxy-900;
+  }
+}
+
+@layer components {
+  /* Dark glassmorphism panel — the core container of the design language. */
+  .glass {
+    @apply rounded-2xl border border-white/10 bg-white/[0.04] shadow-glass backdrop-blur-xl;
+  }
+
+  .glass-strong {
+    @apply rounded-2xl border border-white/10 bg-black/40 shadow-glass backdrop-blur-2xl;
+  }
+
+  /* Neon hairline used to accent active/success surfaces. */
+  .ring-aurora {
+    @apply border-aurora/40 shadow-glow-aurora;
+  }
+  .ring-lightning {
+    @apply border-lightning/40 shadow-glow-lightning;
+  }
+
+  /* Technical/mono numeric readout (sats, ids, pubkeys). */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Gradient text helper for hero numbers / brand. */
+  .text-gradient-aurora {
+    @apply bg-aurora-grad bg-clip-text text-transparent;
+  }
+  .text-gradient-lightning {
+    @apply bg-lightning-grad bg-clip-text text-transparent;
+  }
+}
