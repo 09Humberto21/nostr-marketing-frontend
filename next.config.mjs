@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "standalone",
   reactStrictMode: true,
   async rewrites() {
     // Same-origin proxy to the FastAPI backend. The browser talks to the Next
