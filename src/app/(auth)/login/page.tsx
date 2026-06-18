@@ -46,7 +46,7 @@ function LoginForm() {
       subtitle="Sign in to your campaign control panel."
       footer={
         <>
-          New to Satoshi Galaxy?{" "}
+          New to Nostr Campaign?{" "}
           <Link href="/register" className="font-medium text-aurora hover:underline">
             Create an account
           </Link>

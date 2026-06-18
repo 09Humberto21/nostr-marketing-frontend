@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils/cn";
 
-/** Satoshi Galaxy mark — an orbiting lightning spark. */
+/** Nostr Campaign mark — an orbiting lightning spark. */
 export function Logo({ className }: { className?: string }) {
   return (
     <div className={cn("relative flex size-9 items-center justify-center", className)}>
@@ -29,8 +29,8 @@ export function Wordmark() {
     <div className="flex items-center gap-2.5">
       <Logo />
       <div className="leading-tight">
-        <p className="text-sm font-semibold tracking-tight text-foreground">Satoshi Galaxy</p>
-        <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Nostr Marketing</p>
+        <p className="text-sm font-semibold tracking-tight text-foreground">Nostr Campaign</p>
+        <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Satoshi Galaxy</p>
       </div>
     </div>
   );

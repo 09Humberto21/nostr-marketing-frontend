@@ -1,5 +1,5 @@
 /**
- * TypeScript contracts for the Nostr Marketing Platform API.
+ * TypeScript contracts for the Satoshi Galaxy Platform API.
  *
  * Hand-derived from the OpenAPI 3.1 schema (v0.1.0). String enums that the
  * backend models as plain `string` are narrowed here to literal unions for

@@ -18,12 +18,12 @@ const robotoMono = Roboto_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Satoshi Galaxy — Nostr Marketing Platform",
-    template: "%s · Satoshi Galaxy",
+    default: "Nostr Campaign — Satoshi Galaxy Platform",
+    template: "%s · Nostr Campaign",
   },
   description:
     "Run automated, contextual promotional campaigns on Nostr. Discover relevant users, send zaps, and publish AI-crafted comments — all from one B2B control panel.",
-  applicationName: "Satoshi Galaxy",
+  applicationName: "Nostr Campaign",
 };
 
 export const viewport: Viewport = {

@@ -1,8 +1,8 @@
 {
-  "name": "nostr-marketing-frontend",
+  "name": "satoshi-galaxy-frontend",
   "version": "0.1.0",
   "private": true,
-  "description": "Satoshi Galaxy B2B — frontend for the Nostr Marketing Platform MVP",
+  "description": "Nostr Campaign B2B — frontend for the Satoshi Galaxy Platform MVP",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

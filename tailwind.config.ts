@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 /**
- * "Satoshi Galaxy B2B" design system.
+ * "Nostr Campaign B2B" design system.
  *
  * The palette is split in two layers:
  *  - Semantic shadcn-style tokens (background / foreground / border / ring ...)
@@ -41,7 +41,7 @@ const config: Config = {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
-        // Brand — Satoshi Galaxy
+        // Brand — Nostr Campaign
         galaxy: {
           // deep-space surfaces
           950: "#05070D",

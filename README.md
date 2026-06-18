@@ -1,10 +1,10 @@
-# Satoshi Galaxy — Nostr Marketing Platform (Frontend)
+# Nostr Campaign — Satoshi Galaxy Platform (Frontend)
 
-A production-ready **B2B control panel** for the Nostr Marketing Platform MVP: companies in the
+A production-ready **B2B control panel** for the Satoshi Galaxy Platform MVP: companies in the
 Bitcoin ecosystem run automated, contextual promotional campaigns on Nostr — discovering relevant
 users, sending **zaps**, and publishing **AI-crafted comments**, all from one dashboard.
 
-Built to the **"Satoshi Galaxy B2B"** art direction: deep-space backdrop, dark glassmorphism panels,
+Built to the **"Nostr Campaign B2B"** art direction: deep-space backdrop, dark glassmorphism panels,
 galactic-green (success) and lightning-amber (zaps) neon accents, and a calm, data-first layout.
 
 > Frontend for the FastAPI backend described in `backend-design.md` / OpenAPI `0.1.0`.
@@ -17,7 +17,7 @@ galactic-green (success) and lightning-amber (zaps) neon accents, and a calm, da
 | ------------------ | ----------------------------------------------------------------- |
 | Framework          | **Next.js 15** (App Router) + **React 19**                        |
 | Language           | **TypeScript** (strict, `noUncheckedIndexedAccess`)               |
-| Styling            | **Tailwind CSS** with a custom Satoshi Galaxy design system       |
+| Styling            | **Tailwind CSS** with a custom Nostr Campaign design system       |
 | Server state       | **TanStack React Query v5**                                       |
 | HTTP               | **Axios** with JWT request + 401 response interceptors            |
 | Global/auth state  | **Zustand** (persisted JWT, hydration-aware route guards)         |

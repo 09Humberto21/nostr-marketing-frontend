@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    /* Satoshi Galaxy — semantic tokens (HSL channels) */
+    /* Nostr Campaign — semantic tokens (HSL channels) */
     --background: 222 47% 6%; /* #0B0F19-ish */
     --foreground: 210 40% 96%;
 

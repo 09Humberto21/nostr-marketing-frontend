@@ -17,7 +17,7 @@ export function AuthShell({
     <main className="flex min-h-screen flex-col items-center justify-center px-4 py-10">
       <div className="w-full max-w-md">
         <div className="mb-8 flex justify-center">
-          <Link href="/" aria-label="Satoshi Galaxy home">
+          <Link href="/" aria-label="Nostr Campaign home">
             <Wordmark />
           </Link>
         </div>
