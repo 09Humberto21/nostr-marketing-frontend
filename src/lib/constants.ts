@@ -1,7 +1,7 @@
 import type { CampaignStatus, InteractionStatus } from "@/lib/types/api";
 
 /* Business rules mirrored from the PRD / backend validation. */
-export const ZAP_MIN_SATS = 100;
+export const ZAP_MIN_SATS = 1;
 export const ZAP_MAX_SATS = 5000;
 export const ZAP_DEFAULT_SATS = 500;
 
