@@ -32,13 +32,23 @@ export function useLogin() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const setToken = useAuthStore((s) => s.setToken);
+  const setSession = useAuthStore((s) => s.setSession);
 
   return useMutation({
     mutationFn: (payload: LoginRequest) => login(payload),
     onSuccess: async (data) => {
       setToken(data.access_token);
-      await queryClient.invalidateQueries({ queryKey: queryKeys.me });
-      router.replace("/dashboard");
+      // Resolve the profile before routing so platform admins land on /admin
+      // and company users on /dashboard (no wrong-section flash).
+      try {
+        const me = await getMe();
+        setSession(me.user, me.company);
+        queryClient.setQueryData(queryKeys.me, me);
+        router.replace(me.user.role === "platform_admin" ? "/admin" : "/dashboard");
+      } catch {
+        await queryClient.invalidateQueries({ queryKey: queryKeys.me });
+        router.replace("/dashboard");
+      }
     },
   });
 }

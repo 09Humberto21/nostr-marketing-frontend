@@ -9,6 +9,7 @@ import {
   ExternalLink,
   Hash,
   MessageSquare,
+  Pencil,
   ScanSearch,
   Sparkles,
   Target,
@@ -31,6 +32,7 @@ import { StatusBadge } from "@/components/campaigns/status-badge";
 import { CampaignActions } from "@/components/campaigns/campaign-actions";
 import { MetricCard } from "@/components/campaigns/metric-card";
 import { InteractionsTable } from "@/components/campaigns/interactions-table";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ErrorState } from "@/components/ui/empty-state";
@@ -90,7 +92,19 @@ export default function CampaignDetailPage() {
       <PageHeader
         title={campaign.name}
         description={statusMeta(campaign.status).description}
-        actions={<CampaignActions campaign={campaign} />}
+        actions={
+          <>
+            {campaign.status === "draft" && (
+              <Button asChild variant="outline">
+                <Link href={`/campaigns/${campaign.id}/edit`}>
+                  <Pencil className="size-4" />
+                  Edit
+                </Link>
+              </Button>
+            )}
+            <CampaignActions campaign={campaign} />
+          </>
+        }
       />
 
       <div className="flex flex-wrap items-center gap-3">

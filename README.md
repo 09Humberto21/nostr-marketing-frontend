@@ -67,10 +67,13 @@ the Next.js server (see `next.config.mjs` `rewrites`) forwards those requests to
 `BACKEND_ORIGIN` server-side — no preflight, no CORS config needed on the API.
 
 ```bash
-# .env.local
+# .env.local — this repo ships pointing at the live production backend:
 NEXT_PUBLIC_API_BASE_URL=/api
-BACKEND_ORIGIN=http://localhost:8006   # wherever your FastAPI backend listens
+BACKEND_ORIGIN=https://nostr-campaing.cuboplus.caeher.com
+# For local development against your own API, swap in e.g. http://localhost:8006
 ```
+
+> Restart `npm run dev` after editing `.env.local` — the proxy rewrites are read at server startup.
 
 Quickest way to bring the backend up (Docker, from the backend repo):
 
@@ -101,9 +104,11 @@ src/
 │   ├── (auth)/                  # Public portal (redirects out if logged in)
 │   │   ├── login/
 │   │   └── register/
-│   ├── (dashboard)/             # Authenticated shell (sidebar + topbar + guard)
+│   ├── (dashboard)/             # Authenticated shell (sidebar + topbar + role guard)
 │   │   ├── dashboard/           # The Observatory — aggregated metrics
-│   │   ├── campaigns/           # List · /new (create) · /[id] (detail)
+│   │   ├── campaigns/           # List · /new (create) · /[id] (detail) · /[id]/edit
+│   │   ├── notifications/       # In-app notifications (paginated)
+│   │   ├── admin/              # platform_admin: monitoring · campaigns · interactions
 │   │   └── settings/            # Company profile
 │   ├── error.tsx                # Global error boundary
 │   ├── not-found.tsx
@@ -113,11 +118,13 @@ src/
 ├── components/
 │   ├── ui/                      # Button, Input, Card (glass), Slider, Select, Dialog, Toaster…
 │   ├── layout/                  # Sidebar, Topbar, Starfield, Logo, AuthShell, PageHeader
-│   └── campaigns/               # CampaignForm, KeywordInput, MetricCard, CampaignActions,
-│                                #   StatusBadge, CampaignsTable, InteractionsTable
+│   ├── campaigns/               # CampaignForm, KeywordInput, MetricCard, CampaignActions,
+│   │                            #   StatusBadge, CampaignsTable, InteractionsTable
+│   ├── notifications/           # NotificationBell (popover), NotificationItem
+│   └── admin/                   # AdminCampaignsTable, AdminInteractionsTable
 └── lib/
-    ├── api/                     # Axios client, endpoint modules, error parser, query keys
-    ├── hooks/                   # React Query hooks (auth, campaigns, metrics, company)
+    ├── api/                     # Axios client, endpoint modules (incl. notifications, admin), errors, keys
+    ├── hooks/                   # React Query hooks (auth, campaigns, metrics, company, notifications, admin)
     ├── store/                   # Zustand stores (auth, toast)
     ├── types/api.ts             # TypeScript contracts derived from the OpenAPI schema
     ├── constants.ts             # Business rules (zap limits, packages, status metadata)
@@ -137,7 +144,16 @@ src/
   (100–5000 sats) with a live budget estimate.
 - **Campaign detail** (`/campaigns/[id]`) — the vault: live metrics (polled every 15 s while active),
   impact progress, configuration, lifecycle actions (**Activate / Pause / Resume** with NWC re-validation
-  and a wallet **funds test**), and a paginated **interactions** history.
+  and a wallet **funds test**), and a paginated **interactions** history. Drafts show an **Edit** action.
+- **Edit campaign** (`/campaigns/[id]/edit`) — reuses the create form in edit mode (NWC optional —
+  leave blank to keep the saved wallet); only available while the campaign is a draft (`PATCH /campaigns/{id}`).
+- **Notifications** (`/notifications`) — paginated in-app alerts with an "Unread only" filter and
+  mark-as-read; a **bell** in the topbar shows the unread count and a recent-activity popover.
+- **Admin console** (`platform_admin` only) — **Monitoring** (`/admin`, worker heartbeat /
+  subscription / active campaigns, auto-refreshing), **All campaigns** (`/admin/campaigns`, filter by
+  status / company / date + pause any campaign) and **All interactions** (`/admin/interactions`, filter
+  by campaign / status / errors). Navigation, the post-login redirect and route guards are role-aware:
+  admins live under `/admin`, company users own everything else.
 
 ---
 
@@ -151,10 +167,15 @@ src/
 | `GET /campaigns`                      | Campaigns list · dashboard recent · aggregation  |
 | `POST /campaigns`                     | Create campaign form                             |
 | `GET /campaigns/{id}`                 | Campaign detail                                  |
+| `PATCH /campaigns/{id}`               | Edit (draft) campaign form                        |
 | `POST .../activate · /pause · /resume`| Lifecycle action buttons                         |
 | `POST .../test-nwc`                   | "Test wallet" in the activate/resume dialog      |
 | `GET .../metrics`                     | Metric cards (per-campaign + aggregated)         |
 | `GET .../interactions`               | Paginated interactions table                     |
+| `GET /notifications`, `POST /notifications/{id}/read` | Notifications page + topbar bell |
+| `GET /admin/campaigns`, `POST /admin/campaigns/{id}/pause` | Admin campaigns list + pause |
+| `GET /admin/interactions`             | Admin interactions list                          |
+| `GET /admin/monitoring/state`         | Admin monitoring overview (auto-refresh)         |
 
 ### Error handling
 

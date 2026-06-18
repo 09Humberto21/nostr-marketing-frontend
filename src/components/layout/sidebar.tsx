@@ -2,10 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Plus, Radio, Rocket, Settings } from "lucide-react";
+import {
+  Bell,
+  Gauge,
+  LayoutDashboard,
+  ListChecks,
+  Plus,
+  Radio,
+  Rocket,
+  Settings,
+} from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { Wordmark } from "@/components/layout/logo";
 import { Button } from "@/components/ui/button";
+import { useAuthStore } from "@/lib/store/auth-store";
 
 interface NavItem {
   href: string;
@@ -15,19 +25,33 @@ interface NavItem {
   match?: (pathname: string) => boolean;
 }
 
-const NAV_ITEMS: NavItem[] = [
+const COMPANY_NAV: NavItem[] = [
   { href: "/dashboard", label: "Observatory", icon: LayoutDashboard },
+  { href: "/campaigns", label: "Campaigns", icon: Rocket, match: (p) => p.startsWith("/campaigns") },
+  { href: "/notifications", label: "Notifications", icon: Bell },
+  { href: "/settings", label: "Settings", icon: Settings },
+];
+
+const ADMIN_NAV: NavItem[] = [
+  { href: "/admin", label: "Overview", icon: Gauge, match: (p) => p === "/admin" },
   {
-    href: "/campaigns",
+    href: "/admin/campaigns",
     label: "Campaigns",
     icon: Rocket,
-    match: (p) => p.startsWith("/campaigns"),
+    match: (p) => p.startsWith("/admin/campaigns"),
   },
-  { href: "/settings", label: "Settings", icon: Settings },
+  {
+    href: "/admin/interactions",
+    label: "Interactions",
+    icon: ListChecks,
+    match: (p) => p.startsWith("/admin/interactions"),
+  },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
+  const isAdmin = useAuthStore((s) => s.user?.role) === "platform_admin";
+  const navItems = isAdmin ? ADMIN_NAV : COMPANY_NAV;
 
   return (
     <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-white/5 bg-black/30 px-4 py-6 backdrop-blur-xl lg:flex">
@@ -35,20 +59,22 @@ export function Sidebar() {
         <Wordmark />
       </div>
 
-      <div className="mt-8 px-1">
-        <Button asChild size="sm" className="w-full">
-          <Link href="/campaigns/new">
-            <Plus className="size-4" />
-            New campaign
-          </Link>
-        </Button>
-      </div>
+      {!isAdmin && (
+        <div className="mt-8 px-1">
+          <Button asChild size="sm" className="w-full">
+            <Link href="/campaigns/new">
+              <Plus className="size-4" />
+              New campaign
+            </Link>
+          </Button>
+        </div>
+      )}
 
       <nav className="mt-8 flex flex-1 flex-col gap-1">
         <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/70">
-          Navigation
+          {isAdmin ? "Administration" : "Navigation"}
         </p>
-        {NAV_ITEMS.map((item) => {
+        {navItems.map((item) => {
           const active = item.match
             ? item.match(pathname)
             : pathname === item.href;
@@ -84,7 +110,7 @@ export function Sidebar() {
       <div className="mt-auto rounded-xl border border-white/5 bg-white/[0.02] p-3">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <Radio className="size-3.5 text-aurora animate-pulse-glow" />
-          <span>Real-time Nostr monitoring</span>
+          <span>{isAdmin ? "Platform operations" : "Real-time Nostr monitoring"}</span>
         </div>
       </div>
     </aside>

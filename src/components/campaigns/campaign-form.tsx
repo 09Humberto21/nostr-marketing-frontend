@@ -20,7 +20,6 @@ import {
   ZAP_MAX_SATS,
   ZAP_MIN_SATS,
 } from "@/lib/constants";
-import type { CampaignCreate } from "@/lib/types/api";
 import { formatSats } from "@/lib/utils/format";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -52,8 +51,9 @@ const EMPTY: CampaignFormValues = {
 };
 
 type Errors = Partial<Record<keyof CampaignFormValues, string>>;
+export type CampaignFormMode = "create" | "edit";
 
-function validate(v: CampaignFormValues): Errors {
+function validate(v: CampaignFormValues, mode: CampaignFormMode): Errors {
   const e: Errors = {};
   if (v.name.trim().length < NAME_MIN || v.name.trim().length > NAME_MAX)
     e.name = `Name must be between ${NAME_MIN} and ${NAME_MAX} characters.`;
@@ -69,8 +69,11 @@ function validate(v: CampaignFormValues): Errors {
     e.product_url = "Enter a valid URL (including https://).";
   }
   if (v.keywords.length < 1) e.keywords = "Add at least one keyword.";
-  if (!v.nwc_url.trim()) e.nwc_url = "The NWC connection string is required.";
-  else if (!/^nostr\+walletconnect:\/\//i.test(v.nwc_url.trim()))
+  // On edit the NWC is optional — blank means "keep the saved wallet".
+  const nwc = v.nwc_url.trim();
+  if (mode === "create" && !nwc)
+    e.nwc_url = "The NWC connection string is required.";
+  else if (nwc && !/^nostr\+walletconnect:\/\//i.test(nwc))
     e.nwc_url = "Must start with nostr+walletconnect://";
   if (v.zap_amount_sats < ZAP_MIN_SATS || v.zap_amount_sats > ZAP_MAX_SATS)
     e.zap_amount_sats = `Zap amount must be between ${ZAP_MIN_SATS} and ${ZAP_MAX_SATS} sats.`;
@@ -78,14 +81,16 @@ function validate(v: CampaignFormValues): Errors {
 }
 
 export function CampaignForm({
+  mode = "create",
   defaultValues,
   onSubmit,
   submitting = false,
   serverFieldErrors,
   submitLabel = "Create campaign",
 }: {
+  mode?: CampaignFormMode;
   defaultValues?: Partial<CampaignFormValues>;
-  onSubmit: (values: CampaignCreate) => void | Promise<void>;
+  onSubmit: (values: CampaignFormValues) => void | Promise<void>;
   submitting?: boolean;
   serverFieldErrors?: Record<string, string>;
   submitLabel?: string;
@@ -117,7 +122,7 @@ export function CampaignForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setTouched(true);
-    const validation = validate(values);
+    const validation = validate(values, mode);
     setErrors(validation);
     if (Object.keys(validation).length > 0) {
       // Focus the first invalid field for accessibility.
@@ -224,7 +229,7 @@ export function CampaignForm({
               Wallet (NWC)
             </div>
             <div className="space-y-2">
-              <Label htmlFor="nwc_url" required>
+              <Label htmlFor="nwc_url" required={mode === "create"}>
                 Nostr Wallet Connect URL
               </Label>
               <PasswordInput
@@ -232,12 +237,18 @@ export function CampaignForm({
                 value={values.nwc_url}
                 onChange={(e) => set("nwc_url", e.target.value)}
                 invalid={Boolean(errors.nwc_url)}
-                placeholder="nostr+walletconnect://…"
+                placeholder={
+                  mode === "edit"
+                    ? "Leave blank to keep the saved wallet"
+                    : "nostr+walletconnect://…"
+                }
                 autoComplete="off"
               />
               <FieldHint error={Boolean(errors.nwc_url)}>
                 {errors.nwc_url ??
-                  "Stored encrypted, never returned by the API. Connectivity and funds are validated on submit."}
+                  (mode === "edit"
+                    ? "Leave blank to keep the wallet you saved. Funds are re-validated when you activate."
+                    : "Stored encrypted, never returned by the API. Connectivity and funds are validated on submit.")}
               </FieldHint>
             </div>
           </CardContent>

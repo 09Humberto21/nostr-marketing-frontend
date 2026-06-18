@@ -189,13 +189,73 @@ export interface CampaignInteractionPage {
 }
 
 /* ------------------------------------------------------------------ */
-/* Admin (typed for completeness / future screens)                     */
+/* Notifications                                                       */
+/* ------------------------------------------------------------------ */
+
+/** Backend models this as a plain string; narrowed for icon/tone mapping. */
+export type NotificationType =
+  | "campaign"
+  | "wallet"
+  | "interaction"
+  | "system"
+  | string;
+
+export interface NotificationOut {
+  id: number;
+  company_id: number;
+  campaign_id: number | null;
+  type: NotificationType;
+  title: string;
+  message: string;
+  read_at: string | null;
+  created_at: string;
+}
+
+export interface NotificationPage {
+  items: NotificationOut[];
+  total: number;
+  page: number;
+  page_size: number;
+}
+
+/* ------------------------------------------------------------------ */
+/* Admin (platform_admin role)                                         */
 /* ------------------------------------------------------------------ */
 
 export interface AdminMonitoringState {
   worker_state: string;
   subscribed: boolean;
   active_campaigns: number;
+  last_heartbeat_at: string | null;
+  stale: boolean;
+}
+
+/** Lighter campaign projection returned by the admin listing. */
+export interface AdminCampaignOut {
+  id: number;
+  company_id: number;
+  name: string;
+  status: CampaignStatus | string;
+  package_impacts: number;
+  zap_amount_sats: number;
+  started_at: string | null;
+  ends_at: string | null;
+  completed_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Same shape as a campaign interaction, plus owning campaign/company ids. */
+export interface AdminInteractionOut extends CampaignInteractionOut {
+  campaign_id: number;
+  company_id: number;
+}
+
+export interface AdminInteractionPage {
+  items: AdminInteractionOut[];
+  total: number;
+  page: number;
+  page_size: number;
 }
 
 /* ------------------------------------------------------------------ */
